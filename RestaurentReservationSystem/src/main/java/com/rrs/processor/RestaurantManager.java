@@ -4,17 +4,14 @@
 package com.rrs.processor;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
 import com.rrs.core.Booking;
 import com.rrs.core.Restaurant;
-import com.rrs.core.Table;
 import com.rrs.filter.BookingFilter;
 import com.rrs.filter.DayHourBookingFilter;
 import com.rrs.filter.HolidayBookingFilter;
@@ -26,67 +23,85 @@ import com.rrs.filter.HolidayBookingFilter;
 public class RestaurantManager {
 	
 	private Restaurant restaurent;
-	private List<Table> availableTables;
+	private List<Booking> bookings;
 	
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	
-	public RestaurantManager() throws IOException {
-		restaurent = new Restaurant("VENKI");
-		restaurent.setChainOfFilters(loadFilters());
-		availableTables = new ArrayList<>(restaurent.getTables());
+	public RestaurantManager() {
+		try {
+			restaurent = new Restaurant("VENKI");
+		} catch (IOException e) {
+			System.out.println("Error Occured while initializaing Restauren information. Cannot perfrom any booking. Error: " + e );
+		}
+		restaurent.setChainOfFilters(loadFilters());		
+		bookings = new ArrayList<>();
 	}
 	
-	public void startBooking() throws ParseException {
+	public void startBooking() {
 		int bookingCount = 0;
 		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 		Scanner sc;
 		while(true) {
 			System.out.print("New Booking (y/n):");
 			sc = new Scanner(System.in);
-			char newBooking = sc.next().charAt(0); 
-			if('n' == newBooking || 'N' == newBooking) {
-				break;
+			int hour;
+			int noOfGuests;
+			Date bookingDate;
+			try {
+				char newBooking = sc.next().charAt(0); 
+				if('n' == newBooking || 'N' == newBooking) {
+					break;
+				}
+				System.out.println("Booking Id:" + ++bookingCount);
+				System.out.print("Booking for Date (yyyy-MM-dd):");
+				String date = sc.next();
+				System.out.println();
+				System.out.print("Booking for Hour of the Day (24):");
+				hour = sc.nextInt();
+				System.out.println();
+				System.out.print("Booking for how many?:");
+				noOfGuests = sc.nextInt();
+				System.out.println();					
+				bookingDate = sdf.parse(date);
+			} catch (Exception e) {
+				System.out.println("Invalid Input details. please try again!!" + e);
+				continue;
 			}
-			System.out.print("\nBooking Id:" + ++bookingCount);
-			System.out.print("Booking for Date (yyyy-MM-dd):");
-			String date = sc.next();
-			System.out.println();
-			System.out.print("Booking for Hour of the Day (24):");
-			int hour = sc.nextInt();
-			System.out.println();
-			System.out.print("Booking for how many?:");
-			int noOfGuests = sc.nextInt();
-			System.out.println();
-			Date bookingDate = sdf.parse(date);
 			
 			Booking b = new Booking(bookingCount, bookingDate, hour, noOfGuests);
+			
 			processBooking(b);
+			
+			if(b.isStatus()) {
+				bookings.add(b);
+			}
+			
+			System.out.println(b.getMessage());
+			
 		}
 		sc.close();
 		
 		
 	}
 	
-	private void processBooking(Booking b) {
+	private void processBooking(Booking booking) {
 		
-		if(!restaurent.isBookingOpen(b)) {
-			System.out.println("Restaurent booking is not open for this day or hour");
+		if(!restaurent.isBookingOpen(booking)) {
+			booking.setStatus(Boolean.FALSE);
+			booking.setMessage("Restaurent booking is not open for this day or hour");
 			return;
-		}
+		} 
 		
-		Iterator<Table> tableIerator = availableTables.iterator();
+		int selectedTable = restaurent.selectTable(booking);
 		
-		while(tableIerator.hasNext()) {
-			Table table = tableIerator.next();
-			if(table.bookThisTable(b.getNoOfGuests(), b.getHour())) {
-				System.out.println("Booked Table " + table.getId());
-				b.setStatus(Boolean.TRUE);
-				availableTables.remove(table);
-				return;
-			}
-		}
-		System.out.println("No vacancy in the restaurent to take your order now. Please visit later!!!");
-		
+		if(selectedTable == 0) {
+			booking.setStatus(Boolean.FALSE);
+			booking.setMessage("No vacancy in the restaurent to take your order now. Please visit later!!!");
+		} else {
+			booking.setStatus(Boolean.TRUE);
+			booking.setBookedTableId(selectedTable);
+			booking.setMessage("Booking success. Table number: " + selectedTable);
+		}	
 	}
 
 	

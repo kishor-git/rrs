@@ -17,10 +17,9 @@ public class RestaurantManagerDemo {
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */
-	public static void main(String[] args) throws IOException, ParseException {
+	public static void main(String[] args)  {
 		RestaurantManager manager = new RestaurantManager();
 		manager.startBooking();
-
 	}
 
 }

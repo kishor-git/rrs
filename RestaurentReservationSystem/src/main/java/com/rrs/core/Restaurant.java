@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.rrs.filter.BookingFilter;
+import com.rrs.filter.HourlyCapacityFilter;
 import com.rrs.utils.FileReader;
 
 /**
@@ -38,7 +39,7 @@ public class Restaurant {
 		
 	}
 	
-	public Restaurant(String name) throws IOException {
+	public Restaurant(String name) throws IOException  {
 		setName(name);		
 		loadTables();
 	}
@@ -52,6 +53,7 @@ public class Restaurant {
 			int id = Integer.parseInt(tableData[0]);
 			int capacity = Integer.parseInt(tableData[1]);
 			Table t = new Table(id, capacity);
+			t.setCapaciyFilter(HourlyCapacityFilter.getInstance());
 			tables.add(t);
 		}		
 	}
@@ -66,5 +68,19 @@ public class Restaurant {
 
 	public boolean isBookingOpen(Booking b) {
 		return this.getChainOfFilters().isBookingAvailable(b);
+	}
+	
+	public int selectTable(Booking booking) {
+		for (Table table : tables) {
+			if(!table.isBooked()) {
+				if(table.bookThisTable(booking.getNoOfGuests(), booking.getHour())) {
+					table.setBooked(Boolean.TRUE);
+					return table.getId();
+				}
+			}
+		}
+		return 0;
+		
+		
 	}
 }

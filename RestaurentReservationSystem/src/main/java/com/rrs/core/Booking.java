@@ -50,15 +50,12 @@ public class Booking {
 
 	private int noOfGuests;
 	
-	public boolean performBooking() {
-		return true;
-	}
-	
 	public Booking(int id, Date date, int hr, int noOfGuests) {
 		this.id = id;
 		this.date = date;
 		this.hour = hr;
 		this.noOfGuests = noOfGuests;
+		status = Boolean.FALSE;
 	}
 	
 	private boolean status;
