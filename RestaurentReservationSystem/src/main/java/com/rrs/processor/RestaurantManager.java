@@ -25,8 +25,8 @@ import com.rrs.filter.HolidayBookingFilter;
  */
 public class RestaurantManager {
 	
-	Restaurant restaurent;
-	List<Table> availableTables;
+	private Restaurant restaurent;
+	private List<Table> availableTables;
 	
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	
@@ -79,13 +79,13 @@ public class RestaurantManager {
 		while(tableIerator.hasNext()) {
 			Table table = tableIerator.next();
 			if(table.bookThisTable(b.getNoOfGuests(), b.getHour())) {
-				System.out.println("booked table number:" + table.getId());
+				System.out.println("Booked Table " + table.getId());
 				b.setStatus(Boolean.TRUE);
 				availableTables.remove(table);
 				return;
 			}
 		}
-		System.out.println("No vacancy in the restaurent to take your order!!!");
+		System.out.println("No vacancy in the restaurent to take your order now. Please visit later!!!");
 		
 	}
 
