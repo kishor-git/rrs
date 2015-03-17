@@ -4,6 +4,7 @@
 package com.rrs.processor;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,11 +26,13 @@ public class RestaurantManager {
 	private Restaurant restaurent;
 	private List<Booking> bookings;
 	
+	private Scanner inputScanner = new Scanner(System.in);;
+	
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	
 	public RestaurantManager() {
 		try {
-			restaurent = new Restaurant("VENKI");
+			restaurent = new Restaurant("RESTAURANT");
 		} catch (IOException e) {
 			System.out.println("Error Occured while initializaing Restauren information. Cannot perfrom any booking. Error: " + e );
 		}
@@ -38,50 +41,52 @@ public class RestaurantManager {
 	}
 	
 	public void startBooking() {
-		int bookingCount = 0;
-		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-		Scanner sc;
+		int bookingCount = 0;		
+		
 		while(true) {
 			System.out.print("New Booking (y/n):");
-			sc = new Scanner(System.in);
-			int hour;
-			int noOfGuests;
-			Date bookingDate;
+			
+			Booking booking;
+
 			try {
-				char newBooking = sc.next().charAt(0); 
+				char newBooking = inputScanner.next().charAt(0);
+				
 				if('n' == newBooking || 'N' == newBooking) {
 					break;
 				}
-				System.out.println("Booking Id:" + ++bookingCount);
-				System.out.print("Booking for Date (yyyy-MM-dd):");
-				String date = sc.next();
-				System.out.println();
-				System.out.print("Booking for Hour of the Day (24):");
-				hour = sc.nextInt();
-				System.out.println();
-				System.out.print("Booking for how many?:");
-				noOfGuests = sc.nextInt();
-				System.out.println();					
-				bookingDate = sdf.parse(date);
+				
+				booking = takeNewBooking(bookingCount++);
 			} catch (Exception e) {
-				System.out.println("Invalid Input details. please try again!!" + e);
+				System.out.println("Invalid booking details. please try again!!" + e);
 				continue;
 			}
 			
-			Booking b = new Booking(bookingCount, bookingDate, hour, noOfGuests);
+			processBooking(booking);
 			
-			processBooking(b);
-			
-			if(b.isStatus()) {
-				bookings.add(b);
+			if(booking.isStatus()) {
+				bookings.add(booking);
 			}
 			
-			System.out.println(b.getMessage());
+			System.out.println(booking.getMessage());
 			
-		}
-		sc.close();
+		}	
+	}
+	
+	private Booking takeNewBooking(int bookingCount) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+		System.out.println("Booking Id:" + bookingCount);
+		System.out.print("Booking for Date (yyyy-MM-dd):");
+		String date = inputScanner.next();
+		System.out.println();
+		System.out.print("Booking for Hour of the Day (24):");
+		int hour = inputScanner.nextInt();
+		System.out.println();
+		System.out.print("Booking for how many?:");
+		int noOfGuests = inputScanner.nextInt();
+		System.out.println();					
+		Date bookingDate = sdf.parse(date);
 		
-		
+		return new Booking(bookingCount, bookingDate, hour, noOfGuests);
 	}
 	
 	private void processBooking(Booking booking) {
@@ -112,6 +117,10 @@ public class RestaurantManager {
 		return holidayBookingFilter;	
 	}
 	
-	
+	@Override
+	protected void finalize() {
+		inputScanner.close();
+
+	}
 	
 }
