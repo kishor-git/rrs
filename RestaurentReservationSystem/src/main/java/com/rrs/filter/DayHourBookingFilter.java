@@ -20,7 +20,7 @@ import com.rrs.utils.FileReader;
  */
 public class DayHourBookingFilter extends  BookingFilter {
 	
-	private static Map<Integer, List<Integer>> dayHourAvailabilityMap = new HashMap<>();
+	private static Map<Integer, List<Integer>> dayHourAvailabilityMap = new HashMap();
 	private static final BookingFilter dayBookingFilter = new DayHourBookingFilter();
 	
 	private DayHourBookingFilter() {
@@ -47,7 +47,7 @@ public class DayHourBookingFilter extends  BookingFilter {
 			String hrData = data[1];
 			
 			String[] hrs = hrData.split(",");
-			List<Integer> hrList = new ArrayList<>();
+			List<Integer> hrList = new ArrayList();
 			for (String hr : hrs) {
 				hrList.add(Integer.parseInt(hr));
 			}

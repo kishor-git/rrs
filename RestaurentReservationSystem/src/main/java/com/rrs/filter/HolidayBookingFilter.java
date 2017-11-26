@@ -20,7 +20,7 @@ import com.rrs.utils.FileReader;
 public class HolidayBookingFilter extends BookingFilter {
 
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
-	private static List<Date> holidays =  new ArrayList<>();
+	private static List<Date> holidays =  new ArrayList();
 	private static final BookingFilter holidayBookingFilter = new HolidayBookingFilter();
 	
 	private HolidayBookingFilter() {

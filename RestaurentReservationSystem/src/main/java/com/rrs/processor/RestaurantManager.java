@@ -37,7 +37,7 @@ public class RestaurantManager {
 			System.out.println("Error Occured while initializaing Restauren information. Cannot perfrom any booking. Error: " + e );
 		}
 		restaurent.setChainOfFilters(loadFilters());		
-		bookings = new ArrayList<>();
+		bookings = new ArrayList();
 	}
 	
 	public void startBooking() {

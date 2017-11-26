@@ -21,7 +21,6 @@ public class HourlyCapacityFilter implements CapacityFilter {
 		return capacityFilter;
 	}
 	
-	@Override
 	public int calculateCapacity(int hour, int capacity) {
 		if(hour < LUNCH_CLOSING_HOUR) {
 			return 2*capacity;
